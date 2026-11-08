@@ -1,0 +1,629 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>台電備考日誌</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<style>
+/* 簡化版：首頁只有「今天要做什麼」＋四個大入口，其餘內容各自一頁。日系繪本風、單一淺色。 */
+:root {
+  --paper: #FFFCF6; --ink: #3E3A39;
+  --coral: #F2A497; --yolk: #F6D27A; --sky: #A8D3E6; --leaf: #B9DAA5;
+  --coral-t: #FCE4DE; --yolk-t: #FCF1CF; --sky-t: #E4F2F8; --leaf-t: #EAF4E2; --beige: #F1E9DA; --white: #FFFFFF;
+  --mute: #6E6560; --r: 26px;
+  --f: "Huninn", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f); font-size: 16px; line-height: 1.75; font-weight: 400; font-synthesis: none; -webkit-text-size-adjust: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--paper); }
+h1, h2, h3, p, ul, ol, dl, dd { margin: 0; font-weight: 400; }
+ul, ol { padding: 0; list-style: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+.wrap { max-width: 720px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.card { position: relative; background: var(--white); border: 3px solid var(--ink); border-radius: var(--r); padding: 22px; min-width: 0; }
+.mk { box-shadow: inset 0 -0.5em 0 var(--coral); padding: 0 .12em; }
+
+/* 頂欄 */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); border-bottom: 3px solid var(--ink); }
+.topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-block: 9px; }
+.brand { display: flex; align-items: center; gap: 8px; font-size: 18px; text-decoration: none; white-space: nowrap; }
+.brand svg { width: 32px; height: 32px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 1.4; padding: 2px 12px; background: var(--white); border: 2.5px solid var(--ink); border-radius: 99px; white-space: nowrap; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mute); border: 2px solid var(--ink); flex: none; }
+.sync[data-s="live"] .dot { background: var(--leaf); }
+.sync[data-s="local"] .dot, .sync[data-s="slow"] .dot { background: var(--yolk); }
+.sync[data-s="ro"] .dot { background: var(--sky); }
+
+main .wrap { padding-block: 22px 8px; }
+.view[hidden] { display: none; }
+.pill-link { display: inline-block; padding: 3px 16px; border: 2.5px solid var(--ink); border-radius: 99px; background: var(--white); text-decoration: none; font-size: 15px; line-height: 1.6; }
+.pill-link:hover { background: var(--yolk-t); }
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+.page-title { font-size: 26px; line-height: 1.3; }
+.sub-note { color: var(--mute); font-size: 14.5px; }
+.tag { display: inline-block; font-size: 13px; line-height: 1.5; padding: 0 12px; border: 2px solid var(--ink); border-radius: 99px; background: var(--c, var(--white)); white-space: nowrap; }
+.s-zh { --c: var(--coral); } .s-en { --c: var(--sky); } .s-bm { --c: var(--yolk); } .s-pa { --c: var(--leaf); } .s-law, .s-misc { --c: var(--beige); }
+
+/* 首頁 */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+h1 { font-size: clamp(30px, 7vw, 40px); line-height: 1.3; }
+.status { margin-top: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; }
+.status b { font-weight: 400; font-size: 24px; }
+.mini-bat { display: inline-flex; align-items: center; }
+.mini-bat .cells { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; width: 90px; padding: 3px; border: 2.5px solid var(--ink); border-radius: 9px; background: var(--white); }
+.mini-bat .cells i { height: 12px; border-radius: 3px; background: var(--beige); }
+.mini-bat .cells i.on { background: var(--coral); }
+.mini-bat .nub { width: 5px; height: 10px; border: 2.5px solid var(--ink); border-left: 0; border-radius: 0 4px 4px 0; background: var(--white); }
+.scene { display: block; width: 190px; max-width: 38%; height: auto; flex: none; }
+
+.today { padding: 24px 22px; }
+.today .lab { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--mute); }
+.today .lab b { font-weight: 400; color: var(--ink); font-size: 22px; }
+.today .task { margin: 14px 0 20px; font-size: 24px; line-height: 1.6; text-wrap: pretty; }
+.btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 60px; padding: 8px 24px; border: 3px solid var(--ink); border-radius: 99px; background: var(--coral); font-size: 20px; }
+.btn:hover:not(:disabled) { transform: translateY(-2px); }
+.btn[aria-pressed="true"] { background: var(--leaf); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.today .sub { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.switch { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 2px 16px 2px 10px; border: 2.5px solid var(--ink); border-radius: 99px; background: var(--white); font-size: 14.5px; }
+.switch svg { width: 30px; height: 22px; flex: none; }
+.switch[aria-pressed="true"] { background: var(--sky); }
+.link { font-size: 14.5px; }
+.light-note { margin-top: 12px; padding: 8px 14px; border: 2.5px dashed var(--ink); border-radius: 16px; background: var(--sky-t); font-size: 14px; }
+.stamp { position: absolute; right: 16px; top: -28px; width: 88px; height: 88px; transform: rotate(-10deg); pointer-events: none; }
+.streak { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; font-size: 14px; color: var(--mute); }
+.pips { display: flex; gap: 5px; }
+.pip { width: 16px; height: 16px; border: 2.5px solid var(--ink); border-radius: 50%; background: var(--white); }
+.pip.on { background: var(--yolk); }
+
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+.tile { display: flex; flex-direction: column; gap: 4px; padding: 16px; border: 3px solid var(--ink); border-radius: var(--r); background: var(--c); text-decoration: none; min-width: 0; }
+.tile:hover { transform: translateY(-2px); }
+.tile .ti { width: 46px; height: 46px; border: 3px solid var(--ink); border-radius: 50%; background: var(--white); display: grid; place-items: center; }
+.tile .ti svg { width: 28px; height: 28px; }
+.tile b { font-weight: 400; font-size: 20px; line-height: 1.3; margin-top: 6px; }
+.tile small { font-size: 13.5px; line-height: 1.5; opacity: .85; }
+.t1 { --c: var(--yolk-t); } .t2 { --c: var(--coral-t); } .t3 { --c: var(--sky-t); } .t4 { --c: var(--leaf-t); }
+
+/* 本週行程 */
+.wk { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.wk .arrow { width: 44px; height: 44px; border: 2.5px solid var(--ink); border-radius: 50%; background: var(--white); font-size: 20px; line-height: 1; }
+.wk .arrow:disabled { opacity: .35; cursor: not-allowed; }
+.wk .mid { text-align: center; }
+.wk .mid b { display: block; font-weight: 400; font-size: 20px; }
+.list { margin-top: 16px; padding: 6px 0; }
+.row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-top: 2.5px solid var(--paper); }
+.row + .row { border-top: 2.5px dashed var(--beige); }
+.row:first-child { border-top: 0; }
+.row.today { background: var(--yolk-t); }
+.row.rest { cursor: default; color: var(--mute); }
+.rd { flex: none; width: 52px; font-size: 20px; line-height: 1.2; }
+.rd small { display: block; font-size: 12.5px; color: var(--mute); }
+.rb { flex: 1; min-width: 0; font-size: 15px; line-height: 1.6; }
+.rb .tag { margin-bottom: 2px; }
+.rb span.t { display: block; }
+.check { flex: none; width: 44px; height: 44px; border: 2.5px solid var(--ink); border-radius: 50%; background: var(--white); font-size: 22px; line-height: 1; }
+.check[aria-pressed="true"] { background: var(--leaf); }
+.check:disabled { opacity: .4; cursor: not-allowed; }
+.bonus { margin-top: 14px; padding: 10px 16px; border: 2.5px dashed var(--ink); border-radius: 18px; background: var(--yolk-t); font-size: 14.5px; }
+
+/* 課程進度 */
+.subj { padding: 0; margin-bottom: 14px; overflow: hidden; }
+.subj > button { display: block; width: 100%; padding: 16px 20px; border: 0; background: transparent; text-align: left; }
+.subj .hd { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.subj .hd b { font-weight: 400; font-size: 20px; }
+.subj .hd span { font-size: 18px; }
+.meter { height: 16px; margin-top: 10px; border: 2.5px solid var(--ink); border-radius: 99px; background: var(--paper); overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--c); border-right: 2.5px solid var(--ink); border-radius: 0 99px 99px 0; transition: width .4s ease; }
+.meter i.z { border-right: 0; }
+.chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px; justify-items: center; padding: 4px 20px 20px; }
+.lect { width: 44px; height: 44px; padding: 0; border: 2.5px solid var(--ink); border-radius: 50%; background: var(--white); font-size: 15px; }
+.lect[aria-pressed="true"] { background: var(--c); }
+.lect:disabled { cursor: not-allowed; opacity: .75; }
+
+/* 小鳥 */
+.bird-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+.bird { text-align: center; padding: 12px 6px; border: 2.5px solid var(--ink); border-radius: 20px; background: var(--sky-t); }
+.bird svg { width: 70px; height: 60px; }
+.bird.lock { background: var(--beige); border-style: dashed; }
+.bird small { display: block; color: var(--mute); font-size: 12.5px; }
+
+/* 單日頁 */
+.dp-date { font-size: clamp(54px, 15vw, 80px); line-height: 1.1; }
+.dp-week { margin-top: 2px; color: var(--mute); font-size: 14.5px; }
+.dp-steps { display: grid; gap: 12px; margin: 18px 0; counter-reset: s; }
+.dp-steps li { counter-increment: s; position: relative; padding: 12px 16px 12px 58px; border: 2.5px solid var(--ink); border-radius: 18px; background: var(--paper); font-size: 18px; line-height: 1.7; }
+.dp-steps li::before { content: counter(s); position: absolute; left: 14px; top: 12px; width: 32px; height: 32px; display: grid; place-items: center; font-size: 18px; background: var(--yolk); border: 2.5px solid var(--ink); border-radius: 50%; }
+.dp-pn { display: flex; gap: 8px; }
+.m-date { display: flex; align-items: baseline; gap: 12px; }
+
+/* 說明頁 */
+.sec { margin-top: 26px; }
+.sec h2 { font-size: 21px; margin-bottom: 10px; }
+.stops { display: grid; gap: 12px; }
+.stop { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border: 3px solid var(--ink); border-radius: 22px; background: var(--white); }
+.stop.now { background: var(--yolk-t); }
+.stop .pi { flex: none; width: 46px; height: 46px; border: 3px solid var(--ink); border-radius: 50%; background: var(--c); display: grid; place-items: center; }
+.stop .pi svg { width: 28px; height: 28px; }
+.stop b { font-weight: 400; font-size: 18px; }
+.stop .d { color: var(--mute); font-size: 13px; margin-left: 6px; }
+.stop p { font-size: 14.5px; margin-top: 2px; }
+.facts, .tips { display: grid; gap: 12px; }
+.facts li, .tips li { padding: 12px 16px; border: 2.5px solid var(--ink); border-radius: 18px; background: var(--white); font-size: 15px; }
+.facts b { display: block; font-weight: 400; font-size: 16.5px; }
+.facts span { color: var(--mute); font-size: 14px; }
+.split { display: flex; height: 38px; border: 3px solid var(--ink); border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
+.split span { display: flex; align-items: center; padding-left: 16px; font-size: 15px; white-space: nowrap; overflow: hidden; }
+.split .w { background: var(--coral); border-right: 3px solid var(--ink); } .split .o { background: var(--yolk); }
+.steps { display: grid; gap: 12px; counter-reset: s; }
+.steps li { counter-increment: s; position: relative; padding: 10px 16px 10px 56px; border: 2.5px solid var(--ink); border-radius: 18px; background: var(--white); font-size: 15px; }
+.steps li::before { content: counter(s); position: absolute; left: 14px; top: 10px; width: 30px; height: 30px; display: grid; place-items: center; font-size: 16px; background: var(--yolk); border: 2.5px solid var(--ink); border-radius: 50%; }
+.steps b { display: block; font-weight: 400; font-size: 16.5px; }
+.vs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vs > div { padding: 12px 14px; border: 2.5px solid var(--ink); border-radius: 18px; font-size: 14.5px; }
+.vs b { display: block; font-weight: 400; font-size: 16px; margin-bottom: 4px; }
+.vs .a { background: var(--leaf-t); } .vs .b { background: var(--yolk-t); }
+.tips li { list-style: none; font-size: 14.5px; }
+
+footer { margin-top: 34px; color: var(--mute); font-size: 13.5px; }
+footer .wrap { padding-block: 14px 34px; }
+.hills { display: block; width: 100%; height: 64px; }
+.feed { position: fixed; z-index: 40; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(12px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 8px; justify-items: end; pointer-events: none; }
+.feed div { background: var(--yolk); border: 3px solid var(--ink); border-radius: 99px; padding: 6px 18px; font-size: 14.5px; max-width: min(92vw, 360px); animation: pop .25s ease-out; }
+.feed div.err { background: var(--coral); }
+@keyframes pop { from { transform: translateY(10px); opacity: 0; } }
+
+@media (max-width: 520px) {
+  .scene { display: none; }
+  .today .task { font-size: 22px; }
+  .vs { grid-template-columns: minmax(0, 1fr); }
+  .bird-grid { grid-template-columns: repeat(2, 1fr); }
+  .stamp { width: 76px; height: 76px; top: -30px; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="hanamaru" viewBox="0 0 100 100">
+      <g stroke="#3E3A39" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <circle cx="50" cy="19" r="15" fill="#F2A497"/><circle cx="72" cy="28" r="15" fill="#F2A497"/><circle cx="81" cy="50" r="15" fill="#F2A497"/><circle cx="72" cy="72" r="15" fill="#F2A497"/>
+        <circle cx="50" cy="81" r="15" fill="#F2A497"/><circle cx="28" cy="72" r="15" fill="#F2A497"/><circle cx="19" cy="50" r="15" fill="#F2A497"/><circle cx="28" cy="28" r="15" fill="#F2A497"/>
+        <circle cx="50" cy="50" r="22" fill="#F6D27A"/>
+        <path d="M39 51 L48 60 L62 41" fill="none" stroke-width="5"/>
+      </g>
+    </symbol>
+    <symbol id="bird" viewBox="0 0 44 38">
+      <g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M8 18 L1 11 L12 14 Z" style="fill:var(--w,#A8D3E6)"/>
+        <ellipse cx="22" cy="20" rx="16" ry="13" style="fill:var(--b,#fff)"/>
+        <path d="M11 20 Q17 31 29 23 Q22 14 11 20Z" style="fill:var(--w,#A8D3E6)"/>
+        <path d="M37 17 L43 20 L37 23 Z" fill="#F6D27A"/>
+        <circle cx="30" cy="16" r="1.7" fill="#3E3A39" stroke="none"/>
+        <circle cx="33" cy="22" r="2.6" style="fill:var(--c,#F2A497)" stroke="none"/>
+        <path d="M18 33 V37 M25 33 V37" fill="none"/>
+      </g>
+    </symbol>
+    <symbol id="i-half" viewBox="0 0 40 28"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="2" y="4" width="32" height="20" rx="6" fill="#fff"/><path d="M8 8 H18 V20 H8 a4 4 0 0 1 -4 -4 v-4 a4 4 0 0 1 4 -4z" fill="#F6D27A" stroke-width="2"/><rect x="35" y="11" width="3" height="6" rx="1.5" fill="#fff"/></g></symbol>
+    <symbol id="i-bulb" viewBox="0 0 40 40"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="14" y="27" width="12" height="8" rx="3" fill="#F1E9DA"/><circle cx="20" cy="17" r="11" fill="#F6D27A"/><path d="M16 27 V23 M24 27 V23" fill="none"/></g></symbol>
+    <symbol id="i-bag" viewBox="0 0 40 40"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M15 12 V9 a5 5 0 0 1 10 0 V12" fill="none"/><rect x="8" y="12" width="24" height="23" rx="8" fill="#F2A497"/><rect x="14" y="23" width="12" height="8" rx="3" fill="#FFFCF6"/><path d="M8 20 Q20 26 32 20" fill="none"/></g></symbol>
+    <symbol id="i-glass" viewBox="0 0 40 40"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M25 25 L34 34" stroke-width="5" fill="none"/><circle cx="18" cy="18" r="10" fill="#A8D3E6"/><path d="M13 16 Q15 12 19 12" fill="none"/></g></symbol>
+    <symbol id="i-map" viewBox="0 0 40 40"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M5 11 L15 8 L25 11 L35 8 V29 L25 32 L15 29 L5 32 Z" fill="#B9DAA5"/><path d="M15 8 V29 M25 11 V32" fill="none"/><path d="M9 24 Q12 18 19 22 T31 16" fill="none" stroke-dasharray="2 4"/></g></symbol>
+    <symbol id="i-cal" viewBox="0 0 40 40"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="9" width="28" height="25" rx="6" fill="#FFFCF6"/><path d="M6 17 H34" fill="none"/><path d="M14 5 V12 M26 5 V12" fill="none"/><circle cx="14" cy="24" r="2" fill="#F2A497" stroke="none"/><circle cx="21" cy="24" r="2" fill="#F2A497" stroke="none"/><circle cx="28" cy="24" r="2" fill="#F2A497" stroke="none"/><circle cx="14" cy="29.5" r="2" fill="#A8D3E6" stroke="none"/></g></symbol>
+    <symbol id="i-book" viewBox="0 0 40 40"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 12 Q12 8 5 10 V30 Q12 28 20 32 Q28 28 35 30 V10 Q28 8 20 12Z" fill="#A8D3E6"/><path d="M20 12 V32" fill="none"/></g></symbol>
+    <symbol id="p-sprout" viewBox="0 0 48 48"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M24 40 V24" fill="none"/><path d="M24 29 Q11 29 9 16 Q22 16 24 29Z" fill="#B9DAA5"/><path d="M24 24 Q35 24 39 11 Q26 11 24 24Z" fill="#B9DAA5"/><path d="M12 40 H36" fill="none"/></g></symbol>
+    <symbol id="p-plug" viewBox="0 0 48 48"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="7" y="15" width="30" height="19" rx="6" fill="#F6D27A"/><rect x="37" y="21" width="5" height="7" rx="2" fill="#FFFCF6"/><path d="M24 18 L18 26 H23 L21 32 L29 23 H24Z" fill="#FFFCF6"/></g></symbol>
+    <symbol id="p-bolt" viewBox="0 0 48 48"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M28 5 L11 28 H22 L18 43 L37 19 H26 Z" fill="#F6D27A"/></g></symbol>
+    <symbol id="p-flag" viewBox="0 0 48 48"><g stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M13 7 V42" fill="none"/><path d="M13 9 H38 L31 17 L38 25 H13Z" fill="#F2A497"/></g></symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#home"><svg viewBox="0 0 40 40" aria-hidden="true"><use href="#i-bulb"/></svg><span>台電備考日誌</span></a>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="chip">還有 <span id="tb-days">--</span> 天</span>
+      <span class="chip sync" id="sync" data-s="wait"><i class="dot"></i><span id="sync-t">連線中</span></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="view" id="v-home">
+      <div class="top">
+        <div>
+          <h1>台電雇員<br><span class="mk">備考日誌</span></h1>
+          <div class="status"><span>電量</span><span class="mini-bat"><span class="cells" id="h-cells" aria-hidden="true"></span><span class="nub"></span></span><b id="h-pct">--%</b></div>
+        </div>
+        <svg class="scene" viewBox="0 0 520 380" role="img" aria-label="插圖：電線桿上停著小鳥，旁邊是微笑的燈泡和電池，背景有太陽與山丘">
+      <defs><clipPath id="sc"><rect x="1.5" y="1.5" width="517" height="377" rx="30"/></clipPath></defs>
+      <g stroke="#3E3A39" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="1.5" y="1.5" width="517" height="377" rx="30" fill="#E4F2F8"/>
+        <g clip-path="url(#sc)">
+          <circle cx="432" cy="72" r="32" fill="#F6D27A"/>
+          <path d="M432 24 V16 M466 38 L472 32 M480 72 H488 M466 106 L472 112 M398 38 L392 32 M384 72 H376" fill="none"/>
+          <path d="M52 92 a15 15 0 0 1 4 -29 a21 21 0 0 1 40 -6 a17 17 0 0 1 27 13 a13 13 0 0 1 -3 22 z" fill="#fff"/>
+          <path d="M318 52 a12 12 0 0 1 3 -22 a16 16 0 0 1 31 -4 a13 13 0 0 1 20 10 a10 10 0 0 1 -2 16 z" fill="#fff"/>
+          <path d="M-10 300 Q90 252 200 288 T400 272 T540 288 V390 H-10Z" fill="#EAF4E2"/>
+          <rect x="262" y="96" width="16" height="250" rx="5" fill="#D9B48F"/>
+          <rect x="220" y="108" width="100" height="11" rx="5.5" fill="#D9B48F"/>
+          <rect x="234" y="142" width="72" height="10" rx="5" fill="#D9B48F"/>
+          <circle cx="230" cy="102" r="5" fill="#A8D3E6" stroke-width="2.5"/><circle cx="310" cy="102" r="5" fill="#A8D3E6" stroke-width="2.5"/>
+          <circle cx="242" cy="136" r="5" fill="#A8D3E6" stroke-width="2.5"/><circle cx="298" cy="136" r="5" fill="#A8D3E6" stroke-width="2.5"/>
+          <path d="M-10 110 Q115 175 230 97" fill="none" stroke-width="2.5"/>
+          <path d="M310 97 Q410 170 530 112" fill="none" stroke-width="2.5"/>
+          <path d="M-10 150 Q120 215 242 131" fill="none" stroke-width="2.5"/>
+          <path d="M298 131 Q410 200 530 160" fill="none" stroke-width="2.5"/>
+          <use href="#bird" x="54" y="102" width="44" height="38"/>
+          <use href="#bird" x="119" y="101" width="44" height="38"/>
+          <use href="#bird" x="382" y="101" width="44" height="38" transform="translate(808 0) scale(-1 1)"/>
+          <path d="M-10 336 Q120 288 250 322 T540 306 V390 H-10Z" fill="#B9DAA5"/>
+          <!-- 燈泡 -->
+          <path d="M115 196 V186 M84 208 L77 198 M146 208 L153 198 M64 234 L53 229 M166 234 L177 229" fill="none"/>
+          <rect x="95" y="298" width="40" height="22" rx="7" fill="#F1E9DA"/>
+          <path d="M95 308 H135" fill="none" stroke-width="2.5"/>
+          <rect x="97" y="280" width="36" height="22" rx="6" fill="#F6D27A"/>
+          <circle cx="115" cy="252" r="38" fill="#F6D27A"/>
+          <circle cx="104" cy="250" r="3.5" fill="#3E3A39" stroke="none"/><circle cx="126" cy="250" r="3.5" fill="#3E3A39" stroke="none"/>
+          <path d="M106 262 Q115 271 124 262" fill="none"/>
+          <ellipse cx="96" cy="261" rx="6" ry="4" fill="#F2A497" stroke="none"/><ellipse cx="134" cy="261" rx="6" ry="4" fill="#F2A497" stroke="none"/>
+          <!-- 電池 -->
+          <rect x="425" y="212" width="26" height="15" rx="5" fill="#F1E9DA"/>
+          <rect x="400" y="224" width="74" height="106" rx="18" fill="#fff"/>
+          <path d="M408 272 H466 V300 a10 10 0 0 1 -10 10 H418 a10 10 0 0 1 -10 -10Z" fill="#B9DAA5" stroke-width="2.5"/>
+          <path d="M441 232 L430 250 H438 L433 263 L447 244 H439Z" fill="#F6D27A" stroke-width="2.5"/>
+          <circle cx="426" cy="285" r="3" fill="#3E3A39" stroke="none"/><circle cx="450" cy="285" r="3" fill="#3E3A39" stroke="none"/>
+          <path d="M429 295 Q438 303 447 295" fill="none" stroke-width="2.5"/>
+          <!-- 花 -->
+          <g stroke-width="2"><circle cx="40" cy="352" r="6" fill="#F2A497"/><circle cx="190" cy="348" r="6" fill="#F6D27A"/><circle cx="318" cy="354" r="6" fill="#F2A497"/><circle cx="500" cy="344" r="6" fill="#F6D27A"/><circle cx="262" cy="366" r="5" fill="#fff"/></g>
+        </g>
+      </g>
+    </svg>
+      </div>
+      <div id="mission-body"></div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="view" id="v-week" hidden></div>
+    <div class="view" id="v-progress" hidden></div>
+    <div class="view" id="v-birds" hidden></div>
+    <div class="view" id="v-guide" hidden></div>
+    <div class="view" id="v-day" hidden></div>
+  </div>
+</main>
+
+<footer>
+  <svg class="hills" viewBox="0 0 1200 74" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <g stroke="#3E3A39" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M-10 50 Q150 6 320 44 T640 40 T960 42 T1210 38 V80 H-10Z" fill="#EAF4E2"/>
+      <path d="M-10 66 Q200 34 400 62 T800 58 T1210 60 V80 H-10Z" fill="#B9DAA5"/>
+    </g>
+  </svg>
+  <div class="wrap">進度打勾由兩人共用同步。階段 B、C 的詳細行程之後更新。</div>
+</footer>
+<div class="feed" id="feed" aria-live="polite"></div>
+
+<script type="application/json" id="data">{"weeks":[{"label":"第1週 11/9–11/15","sub":"建立刷題習慣：先求每天做、做完一定看詳解","days":[["企管","阿摩台電企管 20題（不限範圍）→看詳解→標記錯題；未上過的標「待上課」"],["英文","阿摩英文題 20題（文法／單字）→已上過的錯題用私人筆記寫一句話"],["國文","第1–6堂講義：挑3個作文架構，各寫1個破題句（不整理筆記）"],["英文","阿摩英文題 20題＋重測週二已上過的錯題"],["企管","阿摩台電企管 20題（不限範圍）＋重測週一已上過的錯題"],["國文","限時作文1篇（60分鐘）；阿摩「錯題」模式重測本週已上過的錯題"],null],"bonus":"加碼（選）：英文第11堂（約3小時，拆成上、下半堂，用手機／平板看）。看完後，把標「待上課」且屬於該堂的錯題拿出來重測。"},{"label":"第2週 11/16–11/22","sub":"加量與計時：題量增加，開始做整份試卷","days":[["企管","阿摩台電企管 30題（不限範圍）＋重測上週已上過的錯題"],["英文","阿摩英文題 30題＋已上過的錯題一句話筆記"],["國文","第7–12堂講義：挑3個作文架構各寫破題句；累積時事素材2則（只記標題＋一句話）"],["英文","閱讀測驗2篇＋重測週二已上過的錯題"],["企管","整份試卷50題，計時並記錄分數（僅作基準線）；標記錯題"],["國文","完整作文1篇；對照講義架構自評；本週已上過的錯題總重測"],null],"bonus":"加碼（選）：英文第12堂、企管第8堂（共2堂）。看完後，重測標「待上課」且屬於該堂的錯題。"},{"label":"第3週 11/23–11/29","sub":"擴大輸出：錯題重測成為主軸","days":[["企管","阿摩台電企管 30題＋重測第1週已上過的錯題（隔7天）"],["英文","阿摩英文題 30題＋已上過的錯題一句話筆記"],["國文","大綱訓練：3個題目只寫大綱（每題15分鐘）"],["英文","閱讀測驗2篇＋重測週二已上過的錯題"],["企管","整份試卷50題，計時；與上週分數比較（僅作基準線）"],["國文","限時作文1篇＋修改上週作文；本週已上過的錯題總重測"],null],"bonus":"加碼（選）：企管第9、10堂（共2堂）。看完後，重測標「待上課」且屬於該堂的錯題。"},{"label":"第4週 11/30–12/6","sub":"小測與整合：盤點錯題，決定下階段重點","days":[["企管","整份試卷50題，計時模擬；記錄分數（僅作基準線）"],["英文","阿摩英文題 30題計時＋重測近兩週已上過的錯題"],["國文","作文1篇（政策／產業題材），限時"],["英文","計時閱讀測驗3篇"],["總整理","盤點錯題：已上過的找出最常錯主題；「待上課」的列成清單，上課時對照重測"],["評估","盤點復原狀況與課程進度，決定12/7起進度（見階段總覽）"],null],"bonus":"加碼（選）：企管第11、12堂（共2堂）。看完後重測「待上課」錯題。本階段加碼合計7堂（英文2＋企管5），沒完成的順延階段B。"}]}</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById('data').textContent);
+  var WEEKS = DATA.weeks;
+  var SUBJECTS = [
+    { k: 'zh', n: '國文', total: 12, base: 12, cls: 's-zh' },
+    { k: 'en', n: '英文', total: 12, base: 10, cls: 's-en' },
+    { k: 'bm', n: '企業管理概要', total: 16, base: 7, cls: 's-bm' },
+    { k: 'pa', n: '行政學概要', total: 32, base: 0, cls: 's-pa' },
+    { k: 'law', n: '法律常識', total: 30, base: 0, cls: 's-law' }
+  ];
+  var TOTAL = SUBJECTS.reduce(function (a, s) { return a + s.total; }, 0);
+  var SUBCLS = { '國文': 's-zh', '英文': 's-en', '企管': 's-bm' };
+  var START = new Date(2026, 10, 9), EXAM = new Date(2027, 4, 15);
+  var PHASES = [
+    { n: '復原篇', c: 'var(--coral)', ic: 'p-sprout', from: new Date(2026, 10, 9), to: new Date(2026, 11, 6), date: '11/9–12/6', focus: '用阿摩刷題＋錯題重測複習已上課程，輕量加碼新課。', target: '英文第 11–12 堂、企管第 8–12 堂（選做）' },
+    { n: '補給篇', c: 'var(--yolk)', ic: 'p-plug', from: new Date(2026, 11, 7), to: new Date(2027, 0, 31), date: '12/7–1/31', focus: '補完企管，開始並主攻行政學；上完一堂就刷題。', target: '企管第 13–16 堂、行政學第 1–26 堂' },
+    { n: '主攻篇', c: 'var(--sky)', ic: 'p-bolt', from: new Date(2027, 1, 1), to: new Date(2027, 3, 3), date: '2/1–4/3', focus: '行政學收尾，接著上法律常識，邊上課邊刷題。', target: '行政學第 27–32 堂、法律常識第 1–30 堂' },
+    { n: '決戰篇', c: 'var(--leaf)', ic: 'p-flag', from: new Date(2027, 3, 4), to: EXAM, date: '4/4–考前', focus: '全科刷題、整份試卷計時、錯題重測、國文作文批改、口試準備。', target: '不再排新課' }
+  ];
+  var LIGHT = {
+    '企管': '阿摩台電企管 10 題，只看詳解就好。',
+    '英文': '阿摩英文題 10 題，只看詳解就好。',
+    '國文': '只挑 1 個題目，寫出大綱或一句破題（15 分鐘內）。',
+    '總整理': '只記下錯最多的 1 個主題就好。',
+    '評估': '用一句話記下現在的狀況與感受，細部評估等有力氣再做。'
+  };
+  var LIGHT_NOTE = '半力氣模式：今天只做這一點，做完就算完成，連續天數照算。錯題重測和加碼課今天都先跳過。';
+  var BIRDS = [
+    { n: '小藍', w: '#A8D3E6', c: '#F2A497', b: '#FFFFFF' }, { n: '小桃', w: '#F2A497', c: '#F6D27A', b: '#FFFFFF' },
+    { n: '小黃', w: '#F6D27A', c: '#F2A497', b: '#FFFCF6' }, { n: '小綠', w: '#B9DAA5', c: '#F2A497', b: '#FFFFFF' },
+    { n: '小栗', w: '#D9B48F', c: '#F6D27A', b: '#F1E9DA' }, { n: '小福', w: '#F2A497', c: '#F6D27A', b: '#F6D27A' }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var DAY = 86400000;
+  function dayStart(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+  function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function dkey(d) { return 'd' + d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); }
+  function diffDays(a, b) { return Math.round((dayStart(a) - dayStart(b)) / DAY); }
+  var WD = ['日', '一', '二', '三', '四', '五', '六'];
+  function md(d) { return (d.getMonth() + 1) + '/' + d.getDate(); }
+  function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) { return {}; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+  var S = { lect: {}, days: {}, db: null, mode: 'wait', canWrite: null, week: null, openSub: null, route: { v: 'home' }, light: false, today: dayStart(new Date()), live: false };
+  try { S.light = localStorage.getItem('tp_light') === '1'; } catch (e) {}
+  var refs = {}, chains = {};
+
+  function baseDone(k) { var p = k.split('_'), s = SUBJECTS.filter(function (x) { return x.k === p[0]; })[0]; return !!s && +p[1] <= s.base; }
+  function lectDone(k) { return Object.prototype.hasOwnProperty.call(S.lect, k) ? !!S.lect[k] : baseDone(k); }
+  function dayDone(k) { return !!S.days[k]; }
+  function fullLect() { var o = {}; SUBJECTS.forEach(function (s) { for (var i = 1; i <= s.total; i++) { var k = s.k + '_' + i; if (lectDone(k)) o[k] = true; } }); return o; }
+  function counts() {
+    var per = {}, done = 0;
+    SUBJECTS.forEach(function (s) { var n = 0; for (var i = 1; i <= s.total; i++) if (lectDone(s.k + '_' + i)) n++; per[s.k] = n; done += n; });
+    return { per: per, done: done };
+  }
+  function readOnly() { return S.mode === 'ro' || S.canWrite === false; }
+
+  function taskDays() { var out = []; WEEKS.forEach(function (w, wi) { w.days.forEach(function (it, di) { if (it) out.push(addDays(START, wi * 7 + di)); }); }); return out; }
+  function prog() {
+    var streak = 0, birds = 0;
+    taskDays().forEach(function (d) {
+      var diff = diffDays(d, S.today);
+      if (diff > 0) return;
+      if (dayDone(dkey(d))) { streak++; if (streak % 7 === 0) birds++; } else if (diff < 0) streak = 0;
+    });
+    return { streak: streak, birds: Math.min(birds, BIRDS.length) };
+  }
+
+  function queue(name, fn) { chains[name] = (chains[name] || Promise.resolve()).then(fn, fn); return chains[name]; }
+  function persist(name, field, val, full) {
+    if (!S.db) { lsSet('tp_' + name, name === 'lectures' ? S.lect : S.days); return Promise.resolve(); }
+    return queue(name, function () {
+      var ref = refs[name];
+      return ref.update((function () { var o = {}; o[field] = val; return o; })()).catch(function (e) { if (e && e.code === 'invalid_argument') return ref.set(full()); throw e; });
+    });
+  }
+  function toggleLect(k) {
+    var next = !lectDone(k), prev = S.lect[k];
+    S.lect[k] = next; render();
+    var s = SUBJECTS.filter(function (x) { return x.k === k.split('_')[0]; })[0], n = k.split('_')[1];
+    persist('lectures', k, next, fullLect).then(function () {
+      if (next) toast('✔ ' + s.n + '第 ' + n + ' 堂完成' + (counts().per[s.k] === s.total ? '。' + s.n + '全部上完了！' : ''));
+    }).catch(function () { revert(S.lect, k, prev); toast('無法同步，請確認登入並有編輯權限', true); });
+  }
+  function toggleDay(k, label) {
+    var before = prog().birds, next = !S.days[k], prev = S.days[k];
+    S.days[k] = next; render();
+    persist('days', k, next, function () { var o = {}; Object.keys(S.days).forEach(function (x) { if (S.days[x]) o[x] = true; }); return o; }).then(function () {
+      if (!next) return;
+      var p = prog();
+      if (p.birds > before) toast('🐦 連續 ' + (p.birds * 7) + ' 天！來了新朋友：' + BIRDS[p.birds - 1].n);
+      else toast('✔ ' + label + ' 完成，連續 ' + p.streak + ' 天');
+    }).catch(function () { revert(S.days, k, prev); toast('無法同步，請確認登入並有編輯權限', true); });
+  }
+  function revert(o, k, prev) { if (prev === undefined) delete o[k]; else o[k] = prev; render(); }
+  function setLight(v) { S.light = v; try { localStorage.setItem('tp_light', v ? '1' : '0'); } catch (e) {} render(); toast(v ? '好，今天只做最輕的一小步就夠了' : '回到一般任務量'); }
+  function toast(msg, err) { var f = $('feed'), d = document.createElement('div'); d.textContent = msg; if (err) d.className = 'err'; f.appendChild(d); setTimeout(function () { d.remove(); }, 3800); }
+  function setSync() {
+    var el = $('sync'), m = S.mode;
+    if (readOnly() && m !== 'local') m = 'ro';
+    el.setAttribute('data-s', m); $('sync-t').textContent = { wait: '連線中', live: '同步中', local: '本機', slow: '較慢', ro: '唯讀' }[m] || '連線中';
+    el.title = m === 'local' ? '進度只存在這支裝置。以登入並有編輯權限的方式開啟，才會兩人同步。' : m === 'ro' ? '目前帳號沒有編輯權限，只能查看。' : m === 'slow' ? '同步連線較慢，畫面可能不是最新。' : '兩人共用同步';
+  }
+
+  function weekDay(date) {
+    var n = diffDays(date, START);
+    if (n < 0 || n >= WEEKS.length * 7) return null;
+    var wi = Math.floor(n / 7), di = n % 7;
+    return { wi: wi, di: di, w: WEEKS[wi], item: WEEKS[wi].days[di] };
+  }
+  function subTag(name) { return '<span class="tag ' + (SUBCLS[name] || 's-misc') + '">' + name + '</span>'; }
+  function taskText(it) { return S.light ? (LIGHT[it[0]] || '只做最輕的一小步就好。') : it[1]; }
+  function dayHref(d) { return '#day-' + dkey(d).slice(1); }
+  function lightSwitch() { return '<button class="switch" data-light aria-pressed="' + S.light + '"><svg viewBox="0 0 40 28" aria-hidden="true"><use href="#i-half"/></svg><span>今天只有一半力氣</span></button>'; }
+  function streakHtml() {
+    var p = prog(), pips = '', k = p.streak % 7;
+    for (var i = 0; i < 7; i++) pips += '<i class="pip' + (i < k ? ' on' : '') + '"></i>';
+    var txt = p.streak === 0 ? '今天完成就是連續第 1 天' : '連續 ' + p.streak + ' 天' + (p.birds < BIRDS.length ? (k === 0 ? '，剛領到一隻小鳥' : '，再 ' + (7 - k) + ' 天領小鳥') : '，小鳥全員到齊');
+    return '<div class="streak"><span class="pips" role="img" aria-label="距離下一隻小鳥 ' + k + ' / 7">' + pips + '</span><span>' + txt + '</span></div>';
+  }
+  function birdSvg(i, got) {
+    var b = BIRDS[i], st = got ? '--w:' + b.w + ';--c:' + b.c + ';--b:' + b.b : '--w:#E3DBCB;--c:#E3DBCB;--b:#EFE8DA';
+    return '<svg viewBox="0 0 44 38" style="' + st + '" aria-hidden="true"><use href="#bird"/></svg>';
+  }
+  function use(id, vb) { return '<svg viewBox="' + vb + '" aria-hidden="true"><use href="#' + id + '"/></svg>'; }
+  function backHead(title, right) { return '<div class="page-head"><a class="pill-link" href="#home">← 回首頁</a>' + (right || '') + '</div><h2 class="page-title" style="margin-bottom:14px">' + title + '</h2>'; }
+  function currentPhase() { for (var i = 0; i < PHASES.length; i++) if (diffDays(S.today, PHASES[i].from) >= 0 && diffDays(S.today, PHASES[i].to) <= 0) return i; return -1; }
+
+  /* ---------- 首頁 ---------- */
+  function renderHome() {
+    var c = counts(), pct = Math.round(c.done / TOTAL * 100), on = Math.round(pct / 10), cells = '';
+    for (var i = 0; i < 10; i++) cells += '<i' + (i < on ? ' class="on"' : '') + '></i>';
+    $('h-cells').innerHTML = cells; $('h-pct').textContent = pct + '%';
+    $('tb-days').textContent = Math.max(0, diffDays(EXAM, S.today));
+
+    var t = S.today, wd = weekDay(t), out = '';
+    var lab = '<div class="lab"><b>' + md(t) + '</b><span>週' + WD[t.getDay()] + '</span>';
+    if (wd && wd.item) {
+      var key = dkey(t), done = dayDone(key), ro = readOnly();
+      out = '<div class="card today">' + lab + subTag(wd.item[0]) + '</div>' +
+        (S.light ? '<p class="light-note">' + LIGHT_NOTE + '</p>' : '') +
+        '<p class="task">' + taskText(wd.item) + '</p>' +
+        '<button class="btn" data-day="' + key + '" data-label="' + md(t) + '" aria-pressed="' + done + '"' + (ro ? ' disabled' : '') + '>' + (done ? '✔ 今天完成了' : '完成了！') + '</button>' +
+        '<div class="sub">' + lightSwitch() + '<a class="link" href="' + dayHref(t) + '">詳細 ›</a></div>' + streakHtml() +
+        (done ? '<svg class="stamp" viewBox="0 0 100 100" role="img" aria-label="花丸：今日完成"><use href="#hanamaru"/></svg>' : '') + '</div>';
+    } else if (wd) {
+      out = '<div class="card today">' + lab + '</div><p class="task">今天休息。好好恢復也是任務。</p>' + streakHtml() + '</div>';
+    } else if (diffDays(t, START) < 0) {
+      var f = WEEKS[0].days[0];
+      out = '<div class="card today"><div class="lab"><span>準備出發</span></div><p class="task">11/9（週一）開始。今天先把阿摩下載好，試做幾題熟悉介面。</p>' +
+        '<div class="sub"><span class="sub-note">第一天：' + f[0] + '</span><a class="link" href="' + dayHref(START) + '">看第一天 ›</a></div></div>';
+    } else {
+      out = '<div class="card today"><p class="task">階段 A 的行程已結束。階段 B 的詳細任務之後補上。</p></div>';
+    }
+    $('mission-body').innerHTML = out;
+
+    var wk = WEEKS[S.week === null ? Math.max(0, Math.min(WEEKS.length - 1, (weekDay(t) || { wi: 0 }).wi)) : S.week], n = 0, tot = 0, wi = WEEKS.indexOf(wk);
+    wk.days.forEach(function (it, di) { if (it) { tot++; if (dayDone(dkey(addDays(START, wi * 7 + di)))) n++; } });
+    var cur = currentPhase();
+    $('tiles').innerHTML =
+      '<a class="tile t1" href="#week"><span class="ti">' + use('i-cal', '0 0 40 40') + '</span><b>本週行程</b><small>第 ' + (wi + 1) + ' 週　完成 ' + n + ' / ' + tot + '</small></a>' +
+      '<a class="tile t2" href="#progress"><span class="ti">' + use('i-bag', '0 0 40 40') + '</span><b>課程進度</b><small>已上 ' + c.done + ' / ' + TOTAL + ' 堂</small></a>' +
+      '<a class="tile t3" href="#birds"><span class="ti">' + use('bird', '0 0 44 38') + '</span><b>小鳥收藏</b><small>已領 ' + prog().birds + ' / ' + BIRDS.length + ' 隻</small></a>' +
+      '<a class="tile t4" href="#guide"><span class="ti">' + use('i-map', '0 0 40 40') + '</span><b>路線與說明</b><small>' + (cur < 0 ? '準備出發' : '目前：' + PHASES[cur].n) + '</small></a>';
+  }
+
+  /* ---------- 本週行程 ---------- */
+  function renderWeek() {
+    if (S.week === null) { var w0 = weekDay(S.today); S.week = w0 ? w0.wi : 0; }
+    var w = WEEKS[S.week], ro = readOnly(), html = backHead('本週行程') +
+      '<div class="wk"><button class="arrow" data-wk="-1" aria-label="上一週"' + (S.week === 0 ? ' disabled' : '') + '>‹</button><div class="mid"><b>' + w.label.replace(/^第\d+週\s*/, '第 ' + (S.week + 1) + ' 週　') + '</b><span class="sub-note">' + w.sub + '</span></div><button class="arrow" data-wk="1" aria-label="下一週"' + (S.week === WEEKS.length - 1 ? ' disabled' : '') + '>›</button></div>' +
+      (S.light ? '<p class="light-note">' + LIGHT_NOTE + '</p>' : '') + '<div class="card list">';
+    w.days.forEach(function (it, di) {
+      var d = addDays(START, S.week * 7 + di), key = dkey(d), isToday = diffDays(d, S.today) === 0, future = diffDays(d, S.today) > 0, done = dayDone(key);
+      var rd = '<span class="rd">' + md(d) + '<small>週' + WD[d.getDay()] + (isToday ? '．今天' : '') + '</small></span>';
+      if (!it) { html += '<div class="row rest">' + rd + '<span class="rb">休息日</span></div>'; return; }
+      html += '<div class="row' + (isToday ? ' today' : '') + '" data-href="' + dayHref(d).slice(1) + '">' + rd + '<span class="rb">' + subTag(it[0]) + '<span class="t">' + taskText(it) + '</span></span>' +
+        '<button class="check" data-day="' + key + '" data-label="' + md(d) + '" aria-pressed="' + done + '" aria-label="' + md(d) + ' 標記完成"' + (ro || future ? ' disabled' : '') + '>' + (done ? '✔' : '') + '</button></div>';
+    });
+    html += '</div>' + (S.light ? '' : '<p class="bonus">' + w.bonus + '</p>');
+    $('v-week').innerHTML = html;
+  }
+
+  /* ---------- 課程進度 ---------- */
+  function renderProgress() {
+    var c = counts(), ro = readOnly(), html = backHead('課程進度') + '<p class="sub-note" style="margin-bottom:14px">上完一堂就點一下數字圓圈。已上 ' + c.done + ' / ' + TOTAL + ' 堂。</p>';
+    SUBJECTS.forEach(function (s) {
+      var n = c.per[s.k], open = S.openSub === s.k, chips = '';
+      if (open) {
+        chips = '<div class="chips">';
+        for (var i = 1; i <= s.total; i++) { var k = s.k + '_' + i; chips += '<button class="lect" data-lect="' + k + '" aria-pressed="' + lectDone(k) + '" aria-label="' + s.n + '第' + i + '堂"' + (ro ? ' disabled' : '') + '>' + i + '</button>'; }
+        chips += '</div>';
+      }
+      html += '<div class="card subj ' + s.cls + '" style="--c:var(--c)"><button data-sub="' + s.k + '" aria-expanded="' + open + '"><div class="hd"><b>' + s.n + '</b><span>' + n + ' / ' + s.total + (open ? ' ▴' : ' ▾') + '</span></div>' +
+        '<div class="meter"><i class="' + (n === 0 ? 'z' : '') + '" style="width:' + (n / s.total * 100) + '%"></i></div></button>' + chips + '</div>';
+    });
+    $('v-progress').innerHTML = html;
+  }
+
+  /* ---------- 小鳥 ---------- */
+  function renderBirds() {
+    var p = prog(), cap = Math.floor(taskDays().length / 7);
+    var html = backHead('小鳥收藏') + '<div class="card"><p>連續完成每天的任務（休息日不算中斷），集滿 7 天就領一隻新小鳥。中斷後連續天數歸零，已領到的小鳥會留著。</p>' + streakHtml() +
+      '<p class="sub-note" style="margin-top:10px">階段 A 共 ' + taskDays().length + ' 個任務日，最多領 ' + cap + ' 隻；後面階段的任務表補上後可繼續集。</p></div><div class="bird-grid">';
+    BIRDS.forEach(function (b, i) { var got = i < p.birds; html += '<div class="bird' + (got ? '' : ' lock') + '">' + birdSvg(i, got) + '<div>' + (got ? b.n : '？？？') + '</div><small>' + (got ? '第 ' + (i + 1) + ' 隻' : '集滿 7 天領取') + '</small></div>'; });
+    $('v-birds').innerHTML = html + '</div>';
+  }
+
+  /* ---------- 路線與說明 ---------- */
+  function renderGuide() {
+    var cur = currentPhase(), html = backHead('路線與說明') + '<div class="sec" style="margin-top:0"><h2>四個階段</h2><div class="stops">';
+    PHASES.forEach(function (p, i) {
+      html += '<div class="stop' + (i === cur ? ' now' : '') + '" style="--c:' + p.c + '"><span class="pi">' + use(p.ic, '0 0 48 48') + '</span><div><b>' + p.n + '</b><span class="d">' + p.date + (i === cur ? '．你在這裡' : '') + '</span><p>' + p.focus + '</p><p class="sub-note">新課：' + p.target + '</p></div></div>';
+    });
+    html += '</div><p class="sub-note" style="margin-top:10px">考試日暫定 2027/5/15，簡章公布後校準。階段 B、C 的堂數是粗略分配，12/6 評估後再調整。</p></div>' +
+      '<div class="sec"><h2>考試重點</h2><div class="split" role="img" aria-label="筆試 80%，口試 20%"><span class="w" style="flex:80">筆試 80%</span><span class="o" style="flex:20">口試 20%</span></div><ul class="facts">' +
+      '<li><b>筆試四科：國文 20%、英文 20%、專業 A 30%、專業 B 30%</b><span>專業 A ＝ 行政學概要＋法律常識；專業 B ＝ 企業管理概論。</span></li>' +
+      '<li><b>專業 A：單選 50 題，每題 2 分，答錯倒扣三分之一</b><span>109 年試題為準。完全沒把握時，猜與不猜期望相同；四選一能排除至少一個選項再作答就划算。</span></li>' +
+      '<li><b>國文是寫作題</b><span>115 年起改為純寫作，沒有選擇題可以刷，要靠手寫練習。</span></li>' +
+      '<li><b>口試佔 20%</b><span>4 月起要排進口試準備。</span></li></ul></div>' +
+      '<div class="sec"><h2>阿摩刷題三步驟</h2><ol class="steps"><li><b>計時做題 20–30 題</b>不限已上課範圍，沒上過的當預習。</li><li><b>立刻看詳解</b>把答錯的題目標記起來。</li><li><b>錯題分兩類處理</b>見下方。</li></ol></div>' +
+      '<div class="sec"><h2>錯題怎麼分</h2><div class="vs"><div class="a"><b>已上過的內容</b>私人筆記寫一句話：為什麼錯＋正確觀念，30 字內。隔 1、3、7 天用「錯題」模式重測，連續兩次答對就退役。</div><div class="b"><b>還沒上過的內容</b>只看詳解，標「待上課」。不寫理由、不重測，上完該單元再重測。</div></div></div>' +
+      '<div class="sec"><h2>小提醒</h2><ul class="tips"><li>整份試卷的分數階段 A 只當基準線，課程上完（階段 C 以後）再用分數判斷落點。</li><li>阿摩部分模式標示為 VIP，可能顯示 Y 幣費用，詳解也有詳解卡。先試用，確認付費範圍再決定。</li><li>阿摩上的英文與法律常識題庫名稱還沒確認，找不到就改用班內題本。</li><li>每堂課約 3 小時（依英文剩 2 堂約 6 小時推估）；復原期約 4 週，階段 A 可整段順延。</li></ul></div>';
+    $('v-guide').innerHTML = html;
+  }
+
+  /* ---------- 單日頁 ---------- */
+  function renderDay() {
+    var d = S.route.d, box = $('v-day');
+    if (!d) { box.innerHTML = ''; return; }
+    var wd = weekDay(d), key = dkey(d), done = dayDone(key), ro = readOnly();
+    var isToday = diffDays(d, S.today) === 0, future = diffDays(d, S.today) > 0, prev = addDays(d, -1), next = addDays(d, 1);
+    var pn = '<span class="dp-pn">' + (diffDays(prev, START) >= 0 ? '<a class="pill-link" href="' + dayHref(prev) + '">‹ 前一天</a>' : '') + (diffDays(next, START) < WEEKS.length * 7 ? '<a class="pill-link" href="' + dayHref(next) + '">後一天 ›</a>' : '') + '</span>';
+    var html = '<div class="page-head"><a class="pill-link" href="#week">← 本週行程</a>' + pn + '</div><div class="card">' +
+      '<div class="m-date"><span class="dp-date">' + md(d) + '</span><span>週' + WD[d.getDay()] + (isToday ? '．今天' : '') + '</span></div><p class="dp-week">' + wd.w.label + '　' + wd.w.sub + '</p>';
+    if (!wd.item) html += '<p class="task" style="margin-top:14px;font-size:20px">這天是休息日。好好恢復也是任務。</p>';
+    else {
+      var items = S.light ? [taskText(wd.item)] : wd.item[1].split('→'), steps = '';
+      items.forEach(function (x) { steps += '<li>' + x + '</li>'; });
+      html += '<div style="margin-top:12px">' + subTag(wd.item[0]) + '</div>' + (S.light ? '<p class="light-note">' + LIGHT_NOTE + '</p>' : '') + '<ol class="dp-steps">' + steps + '</ol>' +
+        (S.light ? '' : '<p class="bonus" style="margin:0 0 16px">' + wd.w.bonus + '</p>') +
+        '<button class="btn" data-day="' + key + '" data-label="' + md(d) + '" aria-pressed="' + done + '"' + (ro || future ? ' disabled' : '') + '>' + (done ? '✔ 這天完成了' : '完成了！') + '</button>' +
+        (future ? '<p class="sub-note" style="margin-top:10px">還沒到這一天，到了才能標記完成。</p>' : '') +
+        '<div class="sub">' + lightSwitch() + '</div>' + streakHtml() +
+        (done ? '<svg class="stamp" viewBox="0 0 100 100" role="img" aria-label="花丸：完成"><use href="#hanamaru"/></svg>' : '');
+    }
+    box.innerHTML = html + '</div>';
+  }
+
+  function render() {
+    var a = document.activeElement, sel = null, scope = null;
+    if (a && a.dataset) {
+      var sc = a.closest('.view'); scope = sc ? '#' + sc.id : null;
+      if (a.dataset.lect) sel = '[data-lect="' + a.dataset.lect + '"]';
+      else if (a.dataset.day) sel = '[data-day="' + a.dataset.day + '"]';
+      else if (a.dataset.sub) sel = '[data-sub="' + a.dataset.sub + '"]';
+      else if (a.dataset.wk) sel = '[data-wk="' + a.dataset.wk + '"]';
+      else if (a.dataset.light !== undefined) sel = '[data-light]';
+    }
+    renderHome(); renderWeek(); renderProgress(); renderBirds(); renderGuide(); renderDay(); setSync();
+    if (sel) { var root = scope ? document.querySelector(scope) : document, el = root && root.querySelector(sel); if (el && !el.disabled) el.focus({ preventScroll: true }); }
+  }
+
+  /* ---------- 路由 ---------- */
+  var VIEWS = ['home', 'week', 'progress', 'birds', 'guide', 'day'];
+  function parseRoute() {
+    var h = location.hash, m = /^#day-(\d{4})(\d{2})(\d{2})$/.exec(h);
+    if (m) { var d = new Date(+m[1], +m[2] - 1, +m[3]), n = diffDays(d, START); if (d.getMonth() === +m[2] - 1 && n >= 0 && n < WEEKS.length * 7) return { v: 'day', d: d }; return { v: 'home' }; }
+    var name = h.slice(1);
+    return { v: ['week', 'progress', 'birds', 'guide'].indexOf(name) >= 0 ? name : 'home' };
+  }
+  function applyRoute(fromNav) {
+    S.route = parseRoute();
+    if (S.route.v === 'day') S.week = weekDay(S.route.d).wi;
+    VIEWS.forEach(function (v) { $('v-' + v).hidden = v !== S.route.v; });
+    render();
+    if (fromNav) window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', function () { applyRoute(true); });
+
+  document.addEventListener('click', function (e) {
+    var t;
+    if ((t = e.target.closest('[data-lect]')) && !t.disabled) toggleLect(t.dataset.lect);
+    else if ((t = e.target.closest('[data-day]')) && !t.disabled) toggleDay(t.dataset.day, t.dataset.label);
+    else if ((t = e.target.closest('[data-light]'))) setLight(!S.light);
+    else if ((t = e.target.closest('[data-wk]')) && !t.disabled) { S.week = Math.max(0, Math.min(WEEKS.length - 1, S.week + (+t.dataset.wk))); render(); }
+    else if ((t = e.target.closest('[data-sub]'))) { S.openSub = S.openSub === t.dataset.sub ? null : t.dataset.sub; render(); }
+    else if ((t = e.target.closest('[data-href]')) && !e.target.closest('a, button')) location.hash = t.dataset.href;
+  });
+
+  applyRoute(false);
+  setInterval(function () { var n = dayStart(new Date()); if (diffDays(n, S.today) !== 0) { S.today = n; render(); } }, 60000);
+
+  function goLocal() { S.mode = 'local'; S.lect = lsGet('tp_lectures'); S.days = lsGet('tp_days'); render(); }
+  var slowTimer = setTimeout(function () { if (!S.live) { S.mode = 'slow'; setSync(); } }, 10000);
+  Promise.all([window.claude ? window.claude.use('db') : Promise.resolve(null), window.claude ? window.claude.use('user') : Promise.resolve(null)]).then(function (r) {
+    var db = r[0], user = r[1];
+    if (!db) { clearTimeout(slowTimer); goLocal(); return; }
+    S.db = db;
+    if (user) { try { var cw = user.can('data.write'); S.canWrite = (cw === undefined ? null : cw); } catch (e) {} }
+    refs.lectures = db.doc('progress/lectures'); refs.days = db.doc('progress/days');
+    var got = { lectures: false, days: false };
+    function onSnap(name, target) {
+      return function (snap) {
+        S[target] = snap.exists ? (snap.data() || {}) : {};
+        got[name] = !snap.metadata.fromCache || got[name];
+        if (got.lectures && got.days) { S.live = true; clearTimeout(slowTimer); S.mode = 'live'; }
+        render();
+      };
+    }
+    function onErr() { clearTimeout(slowTimer); if (!S.live) goLocal(); else { S.mode = 'slow'; setSync(); } }
+    refs.lectures.onSnapshot(onSnap('lectures', 'lect'), onErr);
+    refs.days.onSnapshot(onSnap('days', 'days'), onErr);
+  }).catch(function () { clearTimeout(slowTimer); goLocal(); });
+})();
+</script>
+
+</body></html>
