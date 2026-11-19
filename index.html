@@ -1,7 +1,14 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>寶B愛大便</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head><body>
+
+<meta name="claude:viewport-fit-sides" content="cover">
+
 <style>
 /* 簡化版：首頁只有「今天要做什麼」＋四個大入口，其餘內容各自一頁。日系繪本風、單一淺色。 */
 :root {
@@ -934,8 +941,29 @@ footer .wrap { padding-block: 14px 34px; }
   setInterval(function () { var n = dayStart(new Date()); if (diffDays(n, S.today) !== 0) { S.today = n; render(); } }, 60000);
 
   function goLocal() { S.mode = 'local'; S.lect = lsGet('tp_lectures'); S.days = lsGet('tp_days'); S.settings = lsGet('tp_settings'); S.gifts = lsGet('tp_gifts'); rebuild(); render(); }
+  var FB_CFG = { apiKey: 'AIzaSyCCEHDSiut16XIoFYRNqOLYlPgCrQAg9AU', authDomain: 'bb-test-2026.firebaseapp.com', projectId: 'bb-test-2026', storageBucket: 'bb-test-2026.firebasestorage.app', messagingSenderId: '741522945746', appId: '1:741522945746:web:f45c319c809c5651961f0b' };
+  var SEED = {
+    lectures: (function () { var o = {}; for (var i = 1; i <= 12; i++) { o['zh_' + i] = true; o['en_' + i] = true; } for (var j = 1; j <= 8; j++) o['bm_' + j] = true; return o; })(),
+    days: { d20261116: true, d20261117: true, d20261118: true }
+  };
+  function fbDb() {
+    if (!window.firebase || !window.firebase.firestore) return null;
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(FB_CFG);
+      var fs = firebase.firestore();
+      S.fb = true;
+      return { doc: function (path) {
+        var r = fs.doc(path.replace(/^progress\//, 'tp/'));
+        return {
+          onSnapshot: function (a, b) { return r.onSnapshot({ includeMetadataChanges: true }, a, b); },
+          update: function (o) { return r.set(o, { merge: true }); },
+          set: function (o) { return r.set(o); }
+        };
+      } };
+    } catch (e) { return null; }
+  }
   var slowTimer = setTimeout(function () { if (!S.live) { S.mode = 'slow'; setSync(); } }, 10000);
-  Promise.all([window.claude ? window.claude.use('db') : Promise.resolve(null), window.claude ? window.claude.use('user') : Promise.resolve(null)]).then(function (r) {
+  Promise.all([window.claude ? window.claude.use('db') : Promise.resolve(fbDb()), window.claude ? window.claude.use('user') : Promise.resolve(null)]).then(function (r) {
     var db = r[0], user = r[1];
     if (!db) { clearTimeout(slowTimer); goLocal(); return; }
     S.db = db;
@@ -945,6 +973,7 @@ footer .wrap { padding-block: 14px 34px; }
     function onSnap(name, target) {
       return function (snap) {
         S[target] = snap.exists ? (snap.data() || {}) : {};
+        if (S.fb && !snap.exists && !snap.metadata.fromCache && SEED[name] && !S['seeded_' + name]) { S['seeded_' + name] = true; try { refs[name].set(SEED[name]); } catch (e) {} }
         got[name] = !snap.metadata.fromCache || got[name];
         if (got.lectures && got.days) { S.live = true; clearTimeout(slowTimer); S.mode = 'live'; }
         render();
