@@ -139,6 +139,10 @@ details.fold .foldbody{padding:0 16px 14px;display:flex;flex-direction:column;ga
         <button class="chip" id="mRand" aria-pressed="false">隨機</button>
         <button class="chip" id="mNew" aria-pressed="false">只出沒練過的</button>
       </div>
+      <div class="row"><span class="label">題數</span>
+        <div class="row" id="countChips"></div>
+        <label class="row" style="gap:6px;font-size:.9rem;color:var(--muted)">自訂 <input id="countInput" type="number" min="1" max="240" inputmode="numeric" placeholder="例如 35" style="width:5.5em;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--bg);color:var(--ink)"> 題</label>
+      </div>
       <div class="row"><button class="btn" id="startBtn">開始練習</button><span class="hint" id="poolInfo"></span></div>
     </div></details>
   <details class="fold" id="statsFold"><summary><span>練習紀錄：已練 <b id="sumDone">0</b> 題・答對率 <b id="sumAcc">—</b>・錯題 <b id="sumBook">0</b></span></summary><div class="foldbody">
@@ -575,6 +579,7 @@ function grade(q,answers){
 }
 
 // ---------- 練習流程 ----------
+let qCount=0; // 0 = 全部
 let selYears=new Set(["115"]), mode="seq", onlyNew=false, queue=[], qi=0, inBookMode=false, answered=false;
 function buildChips(){
   const box=$("yearChips"); box.innerHTML="";
@@ -593,7 +598,19 @@ function buildChips(){
 function pool(){
   return FILL.filter(q=>selYears.has(q.y)&&(!onlyNew||!(state.fill[key(q)]&&(state.fill[key(q)].c+state.fill[key(q)].w))));
 }
-function updatePoolInfo(){$("poolInfo").textContent="將出 "+pool().length+" 題";$("startBtn").disabled=pool().length===0;if(!inBookMode)setupSummary();}
+const COUNT_OPTS=[[10,"10 題"],[20,"20 題"],[50,"50 題"],[0,"全部"]];
+function buildCountChips(){
+  const box=$("countChips"); box.innerHTML="";
+  COUNT_OPTS.forEach(([n,t])=>{
+    const b=document.createElement("button"); b.className="chip"; b.textContent=t;
+    b.setAttribute("aria-pressed",String(qCount===n&&!$("countInput").value));
+    b.onclick=()=>{qCount=n;$("countInput").value="";buildCountChips();updatePoolInfo();};
+    box.appendChild(b);
+  });
+}
+function takeN(a){return qCount>0?a.slice(0,qCount):a;}
+$("countInput").oninput=()=>{const v=parseInt($("countInput").value,10);qCount=v>0?Math.min(v,240):0;buildCountChips();updatePoolInfo();};
+function updatePoolInfo(){const n=pool().length,m=qCount>0?Math.min(qCount,n):n;$("poolInfo").textContent="將出 "+m+" 題"+(m<n?"（符合條件共 "+n+" 題）":"");$("startBtn").disabled=pool().length===0;if(!inBookMode)setupSummary();}
 function setMode(m){mode=m;setupSummary();$("mSeq").setAttribute("aria-pressed",String(m==="seq"));$("mRand").setAttribute("aria-pressed",String(m==="rand"));}
 $("mSeq").onclick=()=>setMode("seq");
 $("mRand").onclick=()=>setMode("rand");
@@ -601,17 +618,17 @@ $("mNew").onclick=()=>{onlyNew=!onlyNew;$("mNew").setAttribute("aria-pressed",St
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function setupSummary(){
   const ys=selYears.size===YEARS.length?"全部年度":selYears.size===0?"未選年度":selYears.size<=3?[...selYears].map(yLabel).join("、"):selYears.size+" 個年度";
-  $("setupSum").textContent=ys+"・"+(mode==="rand"?"隨機":"依題號")+(onlyNew?"・只出沒練過的":"");
+  $("setupSum").textContent=ys+"・"+(mode==="rand"?"隨機":"依題號")+(onlyNew?"・只出沒練過的":"")+(qCount>0?"・"+qCount+" 題":"");
 }
 $("startBtn").onclick=()=>{
-  queue=pool().map(key); if(mode==="rand") shuffle(queue);
+  queue=pool().map(key); if(mode==="rand") shuffle(queue); queue=takeN(queue);
   inBookMode=false; $("setup").open=false; setupSummary(); startRound();
   window.scrollTo({top:0,behavior:"auto"});
 };
 function startBook(){
   const ks=Object.keys(state.fill).filter(k=>state.fill[k].book&&byKey[k]);
   if(!ks.length){toast("錯題本目前是空的");return;}
-  queue=shuffle(ks); inBookMode=true; $("setup").open=false; $("setupSum").textContent="錯題本・隨機"; switchView("practice"); startRound();
+  queue=takeN(shuffle(ks)); inBookMode=true; $("setup").open=false; $("setupSum").textContent="錯題本・隨機"; switchView("practice"); startRound();
 }
 $("bookPractice").onclick=startBook;
 
@@ -785,7 +802,7 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>switchView(t.dataset.
 let toastT; function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2200);}
 function renderAll(){renderStats();renderBook();renderEssay();}
 
-buildChips(); buildEssayChips(); renderAll();
+buildChips(); buildCountChips(); buildEssayChips(); renderAll();
 const h=(location.hash||"").slice(1); if(["book","essay"].includes(h)) switchView(h);
 // 開啟時直接顯示第一題（最新年度），讓頁面一打開就能作答
 queue=FILL.filter(q=>q.y==="115").map(key); startRound();
