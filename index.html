@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>寶B愛大便</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="寶B愛大便">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FFFCF6">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
 <style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -771,7 +778,7 @@ footer .wrap { padding-block: 14px 34px; }
       '<a class="tile t2" href="#progress"><span class="ti">' + use('i-bag', '0 0 40 40') + '</span><b>課程進度</b><small>已上 ' + c.done + ' / ' + TOTAL + ' 堂</small></a>' +
       '<a class="tile t3" href="#gifts"><span class="ti">' + shuttle(true) + '</span><b>禮物兌換</b><small>已解鎖 ' + giftState().filter(function (g) { return g.ok; }).length + ' / ' + GIFTS.length + ' 份</small></a>' +
       '<a class="tile t4" href="#guide"><span class="ti">' + use('i-map', '0 0 40 40') + '</span><b>路線與說明</b><small>' + (cur < 0 ? '準備出發' : '目前：' + PHASES[cur].n) + '</small></a>' +
-      '<a class="tile t5" href="' + QUIZ_URL + '" target="_blank" rel="noopener"><span class="ti">' + use('i-book', '0 0 40 40') + '</span><span class="tx"><b>企管填充題練習 ↗</b><small>阿摩沒有填充題，在這裡練（不用登入）</small></span></a>';
+      '<a class="tile t5" href="' + QUIZ_URL + '"><span class="ti">' + use('i-book', '0 0 40 40') + '</span><span class="tx"><b>企管填充題練習</b><small>阿摩沒有填充題，在這裡練（不用登入）</small></span></a>';
   }
 
   /* ---------- 本週行程 ---------- */
@@ -891,7 +898,7 @@ footer .wrap { padding-block: 14px 34px; }
         (S.light || !wd.w.bonus ? '' : '<p class="bonus" style="margin:0 0 16px">' + wd.w.bonus + '</p>') +
         '<button class="btn" data-day="' + key + '" data-label="' + md(d) + '" aria-pressed="' + done + '"' + (ro || future ? ' disabled' : '') + '>' + (done ? '✔ 這天完成了' : '完成了！') + '</button>' +
         (future ? '<p class="sub-note" style="margin-top:10px">還沒到這一天，到了才能標記完成。</p>' : '') +
-        (!S.light && wd.item[1].indexOf('企管') >= 0 ? '<p style="margin:14px 0 0"><a class="pill-link" href="' + QUIZ_URL + '" target="_blank" rel="noopener">企管填充題練習 ↗</a></p>' : '') +
+        (!S.light && wd.item[1].indexOf('企管') >= 0 ? '<p style="margin:14px 0 0"><a class="pill-link" href="' + QUIZ_URL + '">企管填充題練習 ›</a></p>' : '') +
         '<div class="sub">' + lightSwitch() + '</div>' + streakHtml() +
         (done ? '<svg class="stamp" viewBox="0 0 100 100" role="img" aria-label="花丸：完成"><use href="#hanamaru"/></svg>' : '');
     }
